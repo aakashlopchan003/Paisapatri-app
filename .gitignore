@@ -43,3 +43,7 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# PaisaPatri: never commit real SMS data
+data/
+*.csv
