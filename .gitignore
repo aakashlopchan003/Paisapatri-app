@@ -45,5 +45,6 @@ app.*.map.json
 /android/app/release
 
 # PaisaPatri: never commit real SMS data
-data/
+# Anchored with a leading slash so lib/features/*/data/ (source code) is NOT ignored.
+/data/
 *.csv
