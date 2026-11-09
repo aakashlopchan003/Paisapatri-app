@@ -488,7 +488,7 @@ These were discussed but never finalised. Each has a recommended default so you 
 | D19 | Backend (Node.js considered) | None; or Node.js/Fastify; or Python/FastAPI | **DECIDED 13 Oct 2026: no backend for the FYP.** Node.js only if optional encrypted backup is added later | Decided |
 | D20 | Freeze the category taxonomy | Original 14, proposed 18, or 27 | **DECIDED 13 Oct 2026: 27 categories** (adds Insurance, Travel & Tickets, Entertainment & Leisure, Shopping, Government & Taxes, Savings & Investment, Bank Charges & Fees, Interest, Refund/Reversal; renames Mobile/Recharge and Loan/EMI) | Decided |
 | D21 | Consent wording and AI tools | Agents like Cursor send file contents to cloud AI services | **DECIDED 13 Oct 2026: yes.** Add AI-tools wording to the consent line; check Cursor Privacy Mode; tell the ethics contact; keep names, numbers and codes redacted | Decided (user actions pending) |
-| D22 | Codebase architecture | A: layered MVVM (Flutter team guide); B: feature-first four layers (Riverpod); C: Clean Architecture with use cases (Bloc) | A: simplest properly layered, officially documented, pure-Dart domain for the parser. Details in `docs/architecture-options.md` | Before Phase 1 app work |
+| D22 | Codebase architecture | A: layered MVVM; B: feature-first; C: Clean Architecture | **Decided 9 Nov 2026: feature-first** (DEC-27), based on the base skeleton, trimmed. See `docs/architecture.md` | Decided |
 
 If you pick differently from a default, change the affected phase text and the master list so they stay in sync.
 

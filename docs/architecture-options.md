@@ -1,6 +1,6 @@
-# Codebase architecture options (decision D22, open)
+# Codebase architecture options (decision D22: decided, feature-first)
 
-Status: **choose one before Phase 1 app work starts.** No scaffold has been generated yet. Once you pick, the chosen option is recorded in `docs/decisions.md` and `AGENTS.md`.
+Status: **decided on 9 Nov 2026: feature-first (DEC-27). The layout to follow is in `docs/architecture.md`.** This file is kept as the record of the options that were considered.
 
 Source note: the official Flutter and Android pages could not be opened when this was written, so the descriptions of those guides come from memory. Read the pages linked under "References" and correct this file if anything differs.
 

@@ -47,8 +47,7 @@ for phases and features (F-01…F-75). Follow `docs/decisions.md`.
 - App: Flutter (Dart), Android only.
 - Capture: small Kotlin `NotificationListenerService`, exposed to Flutter by a platform channel.
 - Storage: SQLite + SQLCipher.
-- Parser and categoriser: Dart, on-device. Python in `tools/` and `parser_prototype/`
-  is for data work and reference only.
+- Parser and categoriser: Dart, on-device (`lib/features/parsing/`). The Python prototype is reference only and lives outside this repo.
 - ML is **contingent**: a lightweight text classifier, only if it beats the rule-based
   baseline on a held-out test set.
 
@@ -62,12 +61,33 @@ for phases and features (F-01…F-75). Follow `docs/decisions.md`.
 - `docs/design-system.md` — colour tokens, contrast results, onboarding flow, logo notes (`docs/brand/`).
 - `docs/dev-workflow.md` — how to work with the agent, test on a real phone.
 - `docs/git-workflow.md`, `docs/ai-use-log.md`.
-- `parser_prototype/` — Python reference parsers. **`parser_v3.py` is the one to port to Dart** (v1 and v2 are history). Its 42 tests are in `test_parser_v3.py`.
-- `app/` — the Flutter app. `tools/` — data tools.
+- `docs/architecture.md` — the folder structure and the rules for it (DEC-27). **Read before adding any file.**
+- `docs/progress.md` — done so far, next step, open questions. **Read at the start of every session.**
+- This repository root *is* the Flutter app (`lib/`, `android/`, `test/`).
+- The Python parser prototype (`parser_v3.py`, the one to port to Dart) and the data tools are **not in this repo**; they live in a separate private research folder with the real samples. If the student wants to port `parser_v3.py`, they will copy it into a `reference/` folder here. Never ask for `samples.csv`.
+
+## Code structure (DEC-27: feature-first)
+Full detail and a "where does it go" table are in `docs/architecture.md`. In short:
+- `lib/app/` wiring (`di`), routes (`router`), theme (`theme`, colour tokens from `docs/design-system.md`).
+- `lib/core/` plumbing used by every feature: `constants`, `errors`, `storage` (encrypted database and key), `services`, `utils`. There is **no network and no session code** (no backend, no accounts: DEC-17, DEC-23). Do not create `auth`, `network` or `session` folders.
+- `lib/features/<name>/` one folder per feature, with up to three layers: `data/` (models, data sources, repository implementations), `domain/` (entities, repository interfaces, optional use cases), `presentation/` (providers, screens, widgets).
+- `lib/shared/` things used by several features (for example the 27-category model, common widgets).
+- Features: `onboarding`, `capture`, `parsing`, `transactions`, `review_inbox`, `dashboard`, `budgets`, `settings`.
+
+Rules:
+1. Widgets only show data and call providers. No parsing, no SQL, no business rules in widgets.
+2. Presentation calls repositories or use cases, never the database directly.
+3. `domain/` and `features/parsing/` import no Flutter package, so they run in plain `dart test`.
+4. A feature may import another feature's `domain/` or `shared/`, never its `data/` or `presentation/`.
+5. Add a use case only when a screen needs several repositories or more than one call; otherwise call the repository.
+6. One class per file, about 200 lines at most. Files in `snake_case`, classes in `PascalCase`.
+7. `test/` mirrors `lib/`.
+8. The state-management package is **not chosen yet**. Ask before adding it or any other dependency.
 
 ## Current phase
 **Phase 0–1: foundations and capture/parsing core.** Do not start dashboard, ML or
 forecast work until Phase 1's done checklist in `docs/roadmap.md` is ticked.
+Current status and next step: `docs/progress.md`.
 
 ## How to work
 - One feature at a time, using the feature ID (e.g. "F-06 amount extraction").
@@ -75,8 +95,8 @@ forecast work until Phase 1's done checklist in `docs/roadmap.md` is ticked.
 - Keep functions small. Add a short comment explaining *why*, in plain English.
 - Ask before adding a dependency or changing the schema.
 - Never delete or weaken a failing test to make it pass.
-- Tests and docs use **synthetic** messages only (real format, fake numbers and names). Real messages stay in `data/samples.csv`.
-- Check the parser with `python -m unittest test_parser_v3` (in `parser_prototype/`) and `python tools/evaluate_parser.py --verbose`.
+- Tests and docs use **synthetic** messages only (real format, fake numbers and names). Real messages stay in `data/samples.csv`, which is in a separate folder and never in this repo.
+- Before finishing a task run `flutter analyze` and `flutter test`; both must pass.
 - After each change, state what you changed and how to check it.
 - Do not add features that are not in `docs/roadmap.md`. If something seems missing, ask.
 - Explain code in simple terms; the student must be able to explain it.
