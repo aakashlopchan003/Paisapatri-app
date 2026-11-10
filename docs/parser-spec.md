@@ -83,5 +83,23 @@ Still open:
 5. Wallet notification text from Khalti and others is not seen yet.
 6. Duplicate matching (SMS + notification) and the recurrence rules are not built.
 
+## Parser v3.1 changes (10 Nov 2026)
+Triggered by three Siddhartha Bank messages in the `withdrawn on <date> <time> for <purpose>` layout (samples 17 to 19). Scored first (DEC-26), then fixed with format-level rules, not rules for one merchant.
+
+| Change | Why |
+| --- | --- |
+| Remark = the text after `<verb> on <date> <time> for` | This layout has no `Rem:` or `Remarks:` marker. Anchored on verb + date + `for`, so an ordinary "for" elsewhere is not a remark. |
+| Direction is read only from the text before that remark | A word like "received" inside the purpose must not flip a withdrawal. |
+| Account accepts the `AC ###...1234` prefix | Only `A/C`, `Account` and `Your` were known. |
+| A bank signature must be separated by a space (`... -Laxmi Sunrise`) and be at most 4 words | `PAYABLE-NT Prepaid Topup` was read as the bank "NT Prepaid Topup" (a wrong bank value, now fixed). |
+| Bank from the phone's sender label, only if the label itself contains bank / bikas / finance / laghubitta / sahakari (`bank_source = sender-label`) | The sender shown by the phone is better evidence than the text. A shop or phone number is ignored. A known sender ID in `SENDER_BANKS` still wins (DEC-25). |
+| An unclosed `(` in the remark sets `remark_maybe_truncated` | Banks cut long remarks (`IBFT (IN-...,ABCDEF`). |
+
+Categories this unlocks (existing rules, now reached because the remark is found): `Prepaid Topup` or `TOP UP` is Mobile & Internet; `IBFT` debit is Transfer (neutral). No rule was added for the words `Fund Trf` alone, because "Fund Trf to TOP UP ..." is a payment, not a person-to-person transfer.
+
+Tests: 60 (11 new, synthetic only). The 8 tests that exercise the new behaviour fail on the old parser (mutation-checked). Real samples (19): type 95%, amount 100%, date 100% (SMS), silent errors 0; category 68% on the training set (was 53% after adding the three new samples). Bank is None, not wrong, for #17 to #19 when no sender is given.
+
+Still open: #1, #2, #8, #9, #14 (MPAY / IME / CLW remarks) and #16 (eSewa merchant payment wording) go to review. Account `###...1234` is stored as shown; confirm real sender IDs on a phone.
+
 ## Measuring
 Split samples before writing rules (~70/30). Report per-field and per-bank accuracy on the held-out part only.
